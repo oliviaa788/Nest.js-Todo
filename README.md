@@ -23,7 +23,8 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+#Nest.js To-Do-App
+a simple to-do application buit with Nest.js  for learning backend developmentt
 
 ## Project setup
 
