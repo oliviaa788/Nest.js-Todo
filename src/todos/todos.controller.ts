@@ -1,32 +1,37 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, Query } from '@nestjs/common';
 import { TodosService } from './todos.service';
+import { Todo } from './todo.entity';
 
 @Controller('todos')
 export class TodosController {
   constructor(private readonly todosService: TodosService) {}
 
   @Get()
-  async getAll() {
-    return this.todosService.findAll(); 
-  }
-
-  @Post()
-  async create(@Body() todo: { title: string; description: string; completed: boolean }) {
-    return this.todosService.create(todo); 
+  getTodos(@Query('completed') completed?: string): Promise<Todo[]> {
+    if (completed !== undefined) {
+      const isCompleted = completed === 'true';
+      return this.todosService.getTodosByCompletion(isCompleted);
+    }
+    return this.todosService.getAllTodos();
   }
 
   @Get(':id')
-async getOne(@Param('id') id: string) {
-  return this.todosService.findOne(Number(id));
-}
+  getTodo(@Param('id') id: string): Promise<Todo | null> {
+    return this.todosService.getTodoById(Number(id));
+  }
 
-@Put(':id')
-async update(@Param('id') id: string, @Body() todo: any) {
-  return this.todosService.update(Number(id), todo);
-}
+  @Post()
+  createTodo(@Body() todoData: Partial<Todo>): Promise<Todo> {
+    return this.todosService.createTodo(todoData);
+  }
 
-@Delete(':id')
-async remove(@Param('id') id: string) {
-  return this.todosService.remove(Number(id));
-}
+  @Patch(':id/complete')
+  markCompleted(@Param('id') id: string): Promise<Todo> {
+    return this.todosService.markTaskCompleted(Number(id));
+  }
+
+  @Delete(':id')
+  deleteTodo(@Param('id') id: string): Promise<void> {
+    return this.todosService.deleteTodo(Number(id));
+  }
 }
